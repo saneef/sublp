@@ -9,7 +9,7 @@
 ; fix JS Object syntax from JSON strings
 (define (sanitize-json str)
   (let* ([js (~a "module.exports=" str ";")]
-         [minified-js (run-cmd "terser" js)]
+         [minified-js (run-cmd "terser" js "--format" "comments=0" "--format" "quote_keys=1")]
          [minified-json-match (regexp-match #rx"module.exports=(.*);" minified-js)])
     (cond
       [(list? minified-json-match) (car (cdr minified-json-match))]
@@ -35,7 +35,7 @@
 --
     )
 
-  (define sample-sanitized-json "{\"a-proper-key\":null,another_key:[1,2,3]}")
+  (define sample-sanitized-json "{\"a-proper-key\":null,\"another_key\":[1,2,3]}")
 
   (check-equal? (sanitize-json "[ ]") "[]")
   (check-equal? (sanitize-json "[ /* a comment */ ]") "[]")
