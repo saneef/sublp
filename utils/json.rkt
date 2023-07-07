@@ -13,7 +13,14 @@
 ; fix JS Object syntax from JSON strings
 (define (sanitize-json str)
   (let* ([js (~a "module.exports=" str ";")]
-         [minified-js (run-cmd "terser" js "--format" "comments=0" "--format" "quote_keys=1")]
+         [minified-js (run-cmd "terser"
+                               js
+                               "--format"
+                               "comments=0"
+                               "--format"
+                               "quote_keys=1"
+                               "--format"
+                               "quote_style=2")]
          [minified-json-match (regexp-match #rx"module.exports=(.*);" minified-js)])
     (cond
       [(list? minified-json-match) (car (cdr minified-json-match))]
