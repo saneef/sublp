@@ -10,7 +10,7 @@
          [stdin (open-input-file src-temp)]
          [stdout (open-output-file dest-temp #:exists 'truncate)])
     (display-to-file in src-temp #:mode 'text #:exists 'truncate)
-    (define-values (sp sp-out sp-in sp-err) (subprocess stdout stdin #f cmd-path))
+    (define-values (sp sp-out sp-in sp-err) (apply subprocess stdout stdin #f cmd-path args))
     (define err (port->string sp-err))
     (close-input-port stdin)
     (close-output-port stdout)
