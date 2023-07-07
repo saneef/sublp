@@ -2,6 +2,8 @@
 
 (require rackunit)
 
+(provide run-cmd)
+
 (define (do-run-cmd cmd in . args)
   ; (printf "~a ~a ~a" cmd in args)
   (let* ([cmd-path (find-executable-path cmd)]
@@ -35,5 +37,3 @@
   (check-exn exn:fail:contract? (thunk (run-cmd "non-existent-command" #f)))
   (check-exn exn:fail:user? (thunk (run-cmd "grep" #f "-t")))
   (check-equal? (run-cmd (find-executable-path "cat") "hello") "hello"))
-
-(provide run-cmd)

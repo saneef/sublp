@@ -1,7 +1,11 @@
 #lang racket
 
-(require rackunit)
-(require "./run-cmd.rkt")
+(require rackunit
+         json
+         "./run-cmd.rkt")
+
+(provide sanitize-json
+         parse-json)
 
 ; String -> String
 ; Sanitizes JSON using Terser (https://terser.org) minifier.
@@ -43,4 +47,17 @@
   (check-equal? (sanitize-json sample-json) sample-sanitized-json)
   (check-equal? (sanitize-json sample-json-with-comments) sample-sanitized-json))
 
-(provide sanitize-json)
+; String -> jsexpr
+; Parse given JSON string, str, to jsexpr.
+; Sanitizes the str if needed.
+(define (parse-json str)
+  (let ([parse (lambda (s) (string->jsexpr s #:null #f))])
+    (with-handlers ([exn:fail:read? (lambda (e) (parse (sanitize-json str)))]) (parse str))))
+
+(module+ test
+  (check-equal? (parse-json "{\"a-proper-key\":null,a_improper_key:0}")
+                '#hasheq((a-proper-key . #f) (a_improper_key . 0)))
+  (check-equal? (parse-json "{\n//A Comment\n\"a-proper-key\":null,a_improper_key:0}")
+                '#hasheq((a-proper-key . #f) (a_improper_key . 0)))
+  (check-equal? (parse-json "[]") '())
+  (check-equal? (parse-json "null") #f))
