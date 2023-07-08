@@ -26,7 +26,7 @@
    #:once-each [("-v" "--verbose") "Print extra debugging information." (verbose-mode #t)]
    #:args args
    (cond
-     [(empty? args) (current-directory)]
+     [(empty? args) (path->string (current-directory))]
      [else (last args)])))
 
 (define (find-project path)
