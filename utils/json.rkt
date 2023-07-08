@@ -59,7 +59,7 @@
 ; Sanitizes the str if needed.
 (define (parse-json str)
   (let ([parse (lambda (s) (string->jsexpr s #:null #f))])
-    (with-handlers ([exn:fail:read? (lambda (e) (parse (sanitize-json str)))]) (parse str))))
+    (with-handlers ([exn:fail? (lambda (e) (parse (sanitize-json str)))]) (parse str))))
 
 (module+ test
   (check-equal? (parse-json "{\"a-proper-key\":null,a_improper_key:0}")
