@@ -34,6 +34,9 @@
          [pfiles (get-project-file-paths dirs)]
          [data (map create-project pfiles)]
          [project (find-project-by-path data path-to-open)])
+    (when (verbose-mode)
+      (printf "Paths to search for Sublime Text project files: \n\t~a\n" (string-join dirs "\n\t"))
+      (printf "Project files:\n\t~a\n" (string-join (map path->string pfiles) "\n\t")))
     project))
 
 (define (open-file path)
