@@ -1,9 +1,13 @@
 #!/usr/bin/env racket
 
-#lang racket
+#lang racket/base
 
 (require rackunit
+         racket/bool
          racket/cmdline
+         racket/list
+         racket/system
+         racket/string
          file/glob
          "./utils/file.rkt"
          "./utils/project.rkt")

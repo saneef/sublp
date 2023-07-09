@@ -1,6 +1,10 @@
-#lang racket
+#lang racket/base
 
-(require rackunit)
+(require racket/file
+         racket/port
+         racket/bool
+         racket/function
+         rackunit)
 
 (provide run-cmd)
 

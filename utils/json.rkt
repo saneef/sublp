@@ -1,6 +1,7 @@
-#lang racket
+#lang racket/base
 
-(require rackunit
+(require racket/format
+         rackunit
          json
          "./run-cmd.rkt")
 
