@@ -29,22 +29,22 @@
      [(empty? args) (path->string (current-directory))]
      [else (last args)])))
 
-(define (find-project path)
-  (let* ([dirs (get-project-directories)]
-         [pfiles (get-project-file-paths dirs)]
-         [data (map create-project pfiles)]
-         [project (find-project-by-path data path-to-open)])
+(define (get-project path)
+  (let* ([dirlst (get-project-directories)]
+         [pathlst (get-project-file-paths dirlst)]
+         [plst (map create-project pathlst)]
+         [p (find-project-by-path plst path-to-open)])
     (when (verbose-mode)
-      (printf "Paths to search for Sublime Text project files: \n\t~a\n" (string-join dirs "\n\t"))
-      (printf "Project files:\n\t~a\n" (string-join (map path->string pfiles) "\n\t")))
-    project))
+      (printf "Paths to search for Sublime Text project files: \n\t~a\n" (string-join dirlst "\n\t"))
+      (printf "Project files:\n\t~a\n" (string-join (map path->string pathlst) "\n\t")))
+    p))
 
-(define (open-file path)
+(define (open-file-with-subl path)
   (when (verbose-mode)
     (printf "Opening file: ~a\n" path))
   (system (string-join (list "subl" "--launch-or-new-window" path))))
 
-(define (open-project path)
+(define (open-project-with-subl path)
   (let ([path-str (path->string path)])
     (when (verbose-mode)
       (printf "Opening project: ~a\n" path-str))
@@ -54,8 +54,9 @@
   (when (verbose-mode)
     (printf "Debug messages: ON\n"))
   (let* ([expanded-path (build-absolute-directory-path path-to-open)]
-         [project (find-project expanded-path)]
-         [status
-          (if (false? project) (open-file path-to-open) (open-project (project-file project)))])
+         [project (get-project expanded-path)]
+         [status (if (false? project)
+                     (open-file-with-subl path-to-open)
+                     (open-project-with-subl (project-file project)))])
     (when (verbose-mode)
       (printf "Running 'subl' succeeded: ~a\n" status))))
