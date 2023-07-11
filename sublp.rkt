@@ -43,16 +43,15 @@
       (printf "Project files:\n\t~a\n" (string-join (map path->string pathlst) "\n\t")))
     p))
 
-(define (open-file-with-subl path)
-  (when (verbose-mode)
-    (printf "Opening file: ~a\n" path))
-  (system (string-join (list "subl" "--launch-or-new-window" path))))
-
-(define (open-project-with-subl path)
-  (let ([path-str (path->string path)])
+(define (open-with-subl path [project? #f])
+  (let* ([path-str (if (path? path) (path->string path) path)]
+         [base-command "subl --launch-or-new-window"]
+         [command (if project?
+                      (string-join (list base-command "--project" path-str))
+                      (string-join (list base-command path-str)))])
     (when (verbose-mode)
-      (printf "Opening project: ~a\n" path-str))
-    (system (string-join (list "subl" "--launch-or-new-window" "--project" path-str)))))
+      (printf "Opening: ~a\n" path-str))
+    (system command)))
 
 (module* main #f
   (when (verbose-mode)
@@ -60,7 +59,7 @@
   (let* ([expanded-path (build-absolute-directory-path path-to-open)]
          [project (get-project expanded-path)]
          [status (if (false? project)
-                     (open-file-with-subl path-to-open)
-                     (open-project-with-subl (project-file project)))])
+                     (open-with-subl path-to-open)
+                     (open-with-subl (project-file project) #t))])
     (when (verbose-mode)
       (printf "Running 'subl' succeeded: ~a\n" status))))
