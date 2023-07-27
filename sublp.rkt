@@ -58,8 +58,8 @@
     (printf "Debug messages: ON\n"))
   (let* ([expanded-path (build-absolute-directory-path path-to-open)]
          [project (get-project expanded-path)]
-         [status (if (false? project)
-                     (open-with-subl path-to-open)
-                     (open-with-subl (project-file project) #t))])
+         [project? (not (false? project))]
+         [status
+          (if project? (open-with-subl (project-file project) #t) (open-with-subl path-to-open))])
     (when (verbose-mode)
       (printf "Running 'subl' succeeded: ~a\n" status))))
