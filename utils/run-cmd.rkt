@@ -4,6 +4,7 @@
          racket/port
          racket/bool
          racket/function
+         racket/format
          rackunit)
 
 (provide run-cmd)
@@ -24,7 +25,7 @@
     (subprocess-wait sp)
     (cond
       [(= 0 (subprocess-status sp)) (file->string dest-temp)]
-      [else (raise-user-error err)])))
+      [else (raise-user-error (~a "Unable to run command '" cmd "': " err))])))
 
 ; String/Path String . [String] -> String
 ; Runs a command with provided 'in' piped as stdin and
