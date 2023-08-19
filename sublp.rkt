@@ -10,7 +10,8 @@
          racket/string
          file/glob
          "./utils/file.rkt"
-         "./utils/project.rkt")
+         "./utils/project.rkt"
+         "./utils/string.rkt")
 
 ; Void -> [Listof String]
 ; Returns all the paths to set in env SUBLP_PATH
@@ -25,13 +26,13 @@
 
 (define verbose-mode (make-parameter #f))
 (define path-to-open
-  (command-line
-   #:program "sublp"
-   #:once-each [("-v" "--verbose") "Print extra debugging information." (verbose-mode #t)]
-   #:args args
-   (cond
-     [(empty? args) (path->string (current-directory))]
-     [else (last args)])))
+  (command-line #:program "sublp"
+                #:once-each
+                [("-v" "--verbose") "Print extra debugging information." (verbose-mode #t)]
+                #:args args
+                (cond
+                  [(empty? args) (path->string (current-directory))]
+                  [else (last args)])))
 
 (define (get-project path)
   (let* ([dirlst (get-project-directories)]
@@ -45,10 +46,10 @@
 
 (define (open-with-subl path [project? #f])
   (let* ([path-str (if (path? path) (path->string path) path)]
+         [quoted-path-str (quote-string path-str)]
          [base-command "subl --launch-or-new-window"]
-         [command (if project?
-                      (string-join (list base-command "--project" path-str))
-                      (string-join (list base-command path-str)))])
+         [params (if project? "--project" "")]
+         [command (string-join (list base-command params quoted-path-str))])
     (when (verbose-mode)
       (printf "Opening: ~a\n" path-str))
     (system command)))
